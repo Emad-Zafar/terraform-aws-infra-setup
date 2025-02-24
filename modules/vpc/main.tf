@@ -1,67 +1,41 @@
 provider "aws" {
-  region = "us-west-2"
+  region = var.region
 }
 
 # Create a single shared VPC
 resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
 
   tags = {
-    Name = "shared-vpc"
+    Name = var.vpc_name
   }
 }
 
-# Create Public Subnets (Shared Across Environments)
-resource "aws_subnet" "public_us_west_2a" {
+# Public Subnets
+resource "aws_subnet" "public" {
+  count = length(var.public_subnet_cidrs)
+
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-west-2a"
+  cidr_block        = var.public_subnet_cidrs[count.index]
+  availability_zone = var.azs[count.index]
   map_public_ip_on_launch = true
 
-  tags = { Name = "pub-sub-us-west-2a" }
+  tags = {
+    Name = "pub-sub-${var.azs[count.index]}"
+  }
 }
 
-resource "aws_subnet" "public_us_west_2b" {
+# Private Subnets
+resource "aws_subnet" "private" {
+  count = length(var.private_subnet_cidrs)
+
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = "us-west-2b"
-  map_public_ip_on_launch = true
+  cidr_block        = var.private_subnet_cidrs[count.index]
+  availability_zone = var.azs[count.index]
 
-  tags = { Name = "pub-sub-us-west-2b" }
-}
-
-resource "aws_subnet" "public_us_west_2c" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.3.0/24"
-  availability_zone = "us-west-2c"
-  map_public_ip_on_launch = true
-
-  tags = { Name = "pub-sub-us-west-2c" }
-}
-
-# Create Private Subnets (Shared Across Environments)
-resource "aws_subnet" "private_us_west_2a" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.4.0/24"
-  availability_zone = "us-west-2a"
-
-  tags = { Name = "pri-sub-us-west-2a" }
-}
-
-resource "aws_subnet" "private_us_west_2b" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.5.0/24"
-  availability_zone = "us-west-2b"
-
-  tags = { Name = "pri-sub-us-west-2b" }
-}
-
-resource "aws_subnet" "private_us_west_2c" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.6.0/24"
-  availability_zone = "us-west-2c"
-
-  tags = { Name = "pri-sub-us-west-2c" }
+  tags = {
+    Name = "pri-sub-${var.azs[count.index]}"
+  }
 }
