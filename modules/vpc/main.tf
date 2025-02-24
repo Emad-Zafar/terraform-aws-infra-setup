@@ -2,17 +2,18 @@ provider "aws" {
   region = "us-west-2"
 }
 
+# Create a single shared VPC
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_support   = true
   enable_dns_hostnames = true
 
   tags = {
-    Name = "main-vpc"
+    Name = "shared-vpc"
   }
 }
 
-# Public Subnets
+# Create Public Subnets (Shared Across Environments)
 resource "aws_subnet" "public_us_west_2a" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.1.0/24"
@@ -40,7 +41,7 @@ resource "aws_subnet" "public_us_west_2c" {
   tags = { Name = "pub-sub-us-west-2c" }
 }
 
-# Private Subnets
+# Create Private Subnets (Shared Across Environments)
 resource "aws_subnet" "private_us_west_2a" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.4.0/24"
@@ -64,6 +65,3 @@ resource "aws_subnet" "private_us_west_2c" {
 
   tags = { Name = "pri-sub-us-west-2c" }
 }
-
-
-
