@@ -1,30 +1,69 @@
+provider "aws" {
+  region = "us-west-2"
+}
+
 resource "aws_vpc" "main" {
-  cidr_block = var.cidr
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
   tags = {
-    Name = var.vpc_name
+    Name = "main-vpc"
   }
 }
 
-resource "aws_subnet" "public" {
-  count = length(var.public_subnets)
-
+# Public Subnets
+resource "aws_subnet" "public_us_west_2a" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.public_subnets[count.index].cidr
-  availability_zone = var.public_subnets[count.index].az
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-west-2a"
+  map_public_ip_on_launch = true
 
-  tags = {
-    Name = "${var.vpc_name}-public-${count.index + 1}"
-  }
+  tags = { Name = "pub-sub-us-west-2a" }
 }
 
-resource "aws_subnet" "private" {
-  count = length(var.private_subnets)
-
+resource "aws_subnet" "public_us_west_2b" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.private_subnets[count.index].cidr
-  availability_zone = var.private_subnets[count.index].az
+  cidr_block        = "10.0.2.0/24"
+  availability_zone = "us-west-2b"
+  map_public_ip_on_launch = true
 
-  tags = {
-    Name = "${var.vpc_name}-private-${count.index + 1}"
-  }
+  tags = { Name = "pub-sub-us-west-2b" }
 }
+
+resource "aws_subnet" "public_us_west_2c" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.3.0/24"
+  availability_zone = "us-west-2c"
+  map_public_ip_on_launch = true
+
+  tags = { Name = "pub-sub-us-west-2c" }
+}
+
+# Private Subnets
+resource "aws_subnet" "private_us_west_2a" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.4.0/24"
+  availability_zone = "us-west-2a"
+
+  tags = { Name = "pri-sub-us-west-2a" }
+}
+
+resource "aws_subnet" "private_us_west_2b" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.5.0/24"
+  availability_zone = "us-west-2b"
+
+  tags = { Name = "pri-sub-us-west-2b" }
+}
+
+resource "aws_subnet" "private_us_west_2c" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.6.0/24"
+  availability_zone = "us-west-2c"
+
+  tags = { Name = "pri-sub-us-west-2c" }
+}
+
+
+
