@@ -39,3 +39,15 @@ resource "aws_subnet" "private" {
     Name = "pri-sub-${var.azs[count.index]}"
   }
 }
+
+
+# Create an Internet Gateway (Only if enabled)
+resource "aws_internet_gateway" "igw" {
+  count = var.enable_igw ? 1 : 0  # Creates IGW only if enabled
+
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.vpc_name}-igw"
+  }
+}

@@ -9,7 +9,7 @@ variable "region" {
 variable "vpc_name" {
   description = "Name of the VPC"
   type        = string
-  default     = "shared-vpc"
+  default     = "practice-vpc"
 }
 
 # VPC CIDR Block
@@ -39,3 +39,11 @@ variable "azs" {
   type        = list(string)
   default     = ["us-west-2a", "us-west-2b", "us-west-2c"]
 }
+
+# Enable Internet Gateway
+variable "enable_igw" {
+  description = "Whether to create an Internet Gateway for the VPC"
+  type        = bool
+  default     = true
+}
+
